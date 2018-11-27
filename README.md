@@ -148,6 +148,10 @@ be found
 
 # Release Notes
 
+### Version 0.0.4
+Some of the dependencies required an update because they contained 
+vulnerabilities. Changed several devDependencies. 
+
 ### Version 0.0.3
 Changes in visual studio code 1.28.1 caused a problem. Updated all vscode
 dependencies to the latest version.
