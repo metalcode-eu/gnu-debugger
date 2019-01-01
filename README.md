@@ -146,6 +146,31 @@ upgrade the firmware to J-Link. More information for upgrading to J-Link may
 be found
 [here](https://www.segger.com/products/debug-probes/j-link/models/other-j-links/st-link-on-board/). 
 
+## OpenOCD
+
+OpenOCD supports debug probes from several manufacturers. 
+
+### Install OpenOCD on macOS
+To install OpenOCD on macOS you can used homebrew.
+
+
+    https://brew.sh
+
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+    brew --version
+
+<img src="https://raw.githubusercontent.com/metalcode-eu/gnu-debugger/master/images/homebrew-install.png" alt="homebrew install">
+</div>
+
+    brew install openocd
+
+    openocd --version    
+
+<img src="https://raw.githubusercontent.com/metalcode-eu/gnu-debugger/master/images/openocd-install.png" alt="openocd install">
+</div>
+
+
 # Release Notes
 
 ### Version 0.0.4
