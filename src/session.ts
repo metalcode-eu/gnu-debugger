@@ -362,6 +362,11 @@ export class GnuDebugSession extends DebugSession {
 
 		this.serverSuccess = /Connected to target/;
 		this.serverFailure = /ERROR:/;
+		if (args.server == "openocd")
+		{
+			this.serverSuccess = /Info : CMSIS-DAP: Interface ready/;
+			this.serverFailure = /Error:/;
+		}
 		this.clientSuccess = /\(gdb\)/;
 		this.clientFailure = /ERROR:/;
 
@@ -427,7 +432,7 @@ export class GnuDebugSession extends DebugSession {
 				this.serverReject = reject;
 				this.server = spawn(path, args);
 				this.server.stdout.on('data', this.serverOutput.bind(this));
-				this.server.stderr.on('data', this.serverError.bind(this));
+				this.server.stderr.on('data', this.serverOutput.bind(this));
 				this.server.on("error", this.serverError.bind(this));
 			});
 	}
@@ -473,7 +478,7 @@ export class GnuDebugSession extends DebugSession {
 
 		// Display in vscode debug console
 		this.error(text);
-		this.serverReject(text);
+		// this.serverReject(text);
 	}
 
 	protected clientLaunch

@@ -3,7 +3,7 @@
 	"displayName": "gnu-debugger",
 	"description": "JLink GNU debugger for Visual Studio Code.",
 	"icon": "images/GNU-debugger-128x128.png",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"preview": true,
 	"publisher": "metalcode-eu",
 	"engines": {
