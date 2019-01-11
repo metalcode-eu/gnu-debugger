@@ -364,7 +364,7 @@ export class GnuDebugSession extends DebugSession {
 		this.serverFailure = /ERROR:/;
 		if (args.server == "openocd")
 		{
-			this.serverSuccess = /Info : CMSIS-DAP: Interface ready/;
+			this.serverSuccess = /Info : Listening/;
 			this.serverFailure = /Error:/;
 		}
 		this.clientSuccess = /\(gdb\)/;
