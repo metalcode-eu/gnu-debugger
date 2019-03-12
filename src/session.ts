@@ -361,14 +361,13 @@ export class GnuDebugSession extends DebugSession {
 		this.stdout('Server port = ' + args.serverPort + '\n');
 
 		this.serverSuccess = /Connected to target/;
-		this.serverFailure = /ERROR:/;
+		this.serverFailure = /Error:|ERROR:/;
+		this.clientSuccess = /\(gdb\)/;
+		this.clientFailure = /Error:|ERROR:/;
 		if (args.server == "openocd")
 		{
 			this.serverSuccess = /Info : Listening/;
-			this.serverFailure = /Error:/;
 		}
-		this.clientSuccess = /\(gdb\)/;
-		this.clientFailure = /ERROR:/;
 
 		this.halt = false;
 		this.starting = true;
@@ -498,8 +497,8 @@ export class GnuDebugSession extends DebugSession {
 	}
 
 	/**
-	Standard output of the GDB client is bound to this function.
-	*/
+		Standard output of the GDB client is bound to this function.
+	**/
 	private clientOutput(data) {
 		const text = data.toString('utf8');
 		this.clientBuffer += text;
@@ -523,6 +522,9 @@ export class GnuDebugSession extends DebugSession {
 				else {
 					const record = gdbMI.parseMI(line);
 
+					if ((line.match(this.clientFailure))) {
+						this.clientError(text);
+					}
 					if (record instanceof gdbMI.MIasync) {
 						switch (record.type) {
 							// exec-async-output
@@ -1418,14 +1420,14 @@ export class GnuDebugSession extends DebugSession {
 
 	private launchCommands(host: string, port: number, program: string) {
 		const commands = [
-			'-gdb-set target-async on',
+//			`-gdb-version`,
+			`-gdb-set target-async on`,
 			`-file-exec-and-symbols "${program}"`,
 			`-target-select extended-remote ${host}:${port}`,
-			'-interpreter-exec console "monitor halt"',
-			'-interpreter-exec console "monitor reset"',
-			'-target-download',
-			'-enable-pretty-printing',
-			// '-gdb-version',
+			`-interpreter-exec console "monitor halt"`,
+			`-interpreter-exec console "monitor reset"`,
+			`-target-download`,
+			`-enable-pretty-printing`,
 		];
 
 		const promises = commands.map((c) => this.sendCommand(c));
