@@ -338,7 +338,7 @@ export class GnuDebugSession extends DebugSession {
 		}
 		args.server = args.server.replace(/\\/g, '/');
 		if (!args.serverHost) {
-			args.serverHost = 'localhost';
+			args.serverHost = '';
 		}
 		if (!args.serverPort) {
 			args.serverPort = 2331;
@@ -1420,14 +1420,14 @@ export class GnuDebugSession extends DebugSession {
 
 	private launchCommands(host: string, port: number, program: string) {
 		const commands = [
-//			`-gdb-version`,
+			// `-gdb-version`,
 			`-gdb-set target-async on`,
-			`-file-exec-and-symbols "${program}"`,
+			`-enable-pretty-printing`,
 			`-target-select extended-remote ${host}:${port}`,
+			`-file-exec-and-symbols "${program}"`,
 			`-interpreter-exec console "monitor halt"`,
 			`-interpreter-exec console "monitor reset"`,
 			`-target-download`,
-			`-enable-pretty-printing`,
 		];
 
 		const promises = commands.map((c) => this.sendCommand(c));
