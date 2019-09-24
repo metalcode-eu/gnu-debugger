@@ -181,6 +181,8 @@ interface LaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
 	client: string;
 	/// Arguments for GDB client.
 	clientArgs: string[];
+	/// Commands for GDB MI.
+	gdbCommands: string[];
 
 	/// Path to GDB server.
 	server: string;
@@ -216,7 +218,9 @@ export class GnuDebugSession extends DebugSession {
 	/// Server promise reject
 	private serverReject: (error: string) => void;
 	/// Test for server success
-	private serverSuccess: RegExp;
+	private serverSuccess0: RegExp;
+	/// Test for server success
+	private serverSuccess1: RegExp;
 	/// Test for server failure 
 	private serverFailure: RegExp;
 
@@ -332,7 +336,21 @@ export class GnuDebugSession extends DebugSession {
 		args.clientArgs.push(args.program);
 		args.clientArgs.push('-q');
 		args.clientArgs.push('--interpreter=mi');
+		if (!args.gdbCommands) {
+			args.gdbCommands = 
+			[
+			//  `-gdb-version`,
+			`-gdb-set target-async on`,
+			`-enable-pretty-printing`,
+			`-target-select extended-remote ${args.serverHost}:${args.serverPort}`,
+			`-file-exec-and-symbols "${args.program}"`,
+			`-interpreter-exec console "monitor halt"`,
+			`-interpreter-exec console "monitor reset"`,
+			`-target-download`,
+			];
+		}
 
+		
 		if (!args.server) {
 			args.server = 'JLinkGDBServer';
 		}
@@ -353,21 +371,18 @@ export class GnuDebugSession extends DebugSession {
 			this.debugOutput = args.debugOutput;
 		}
 
-		this.stdout('program     = ' + args.program + '\n');
-		this.stdout('Toolchain   = ' + args.toolchain + '\n');
-		this.stdout('Client      = ' + args.client + '\n');
-		this.stdout('Server      = ' + args.server + '\n');
-		this.stdout('Server host = ' + args.serverHost + '\n');
-		this.stdout('Server port = ' + args.serverPort + '\n');
+		this.stdout('program          = ' + args.program + '\n');
+		this.stdout('Toolchain        = ' + args.toolchain + '\n');
+		this.stdout('Client           = ' + args.client + '\n');
+		this.stdout('Server           = ' + args.server + '\n');
+		this.stdout('Server host      = ' + args.serverHost + '\n');
+		this.stdout('Server port      = ' + args.serverPort + '\n');
 
-		this.serverSuccess = /Connected to target/;
+		this.serverSuccess0 = /Connected to target/;
+		this.serverSuccess1 = /Info : Listening/;
 		this.serverFailure = /Error:|ERROR:/;
 		this.clientSuccess = /\(gdb\)/;
 		this.clientFailure = /Error:|ERROR:/;
-		if (args.server == "openocd")
-		{
-			this.serverSuccess = /Info : Listening/;
-		}
 
 		this.halt = false;
 		this.starting = true;
@@ -398,8 +413,7 @@ export class GnuDebugSession extends DebugSession {
 							() => {
 								this.stdout('Client success\n');
 								this.starting = false;
-								this.launchCommands
-									(args.serverHost, args.serverPort, args.program);
+								this.launchCommands(args.gdbCommands);
 								this.sendResponse(response);
 							},
 							// Client failure
@@ -445,14 +459,18 @@ export class GnuDebugSession extends DebugSession {
 
 		let end = this.serverBuffer.lastIndexOf('\n');
 		if (end !== -1) {
-			let lines = this.serverBuffer.substr(0, end).split('\n') as string[];
+			let lines = this.serverBuffer.substr(0, end).split(/\r\n|\r|\n/) as string[];
 			this.serverBuffer = this.serverBuffer.substring(end + 1);
 
 			for (let line of lines) {
 				// Display in vscode debug console
 				this.debugServer(line + '\n');
 				if (this.starting) {
-					if ((line.match(this.serverSuccess))) {
+					if 
+					(
+						line.match(this.serverSuccess0) || 
+						line.match(this.serverSuccess1)
+					) {
 						this.serverResolve();
 					}
 					if ((line.match(this.serverFailure))) {
@@ -460,7 +478,14 @@ export class GnuDebugSession extends DebugSession {
 					}
 				}
 			}
-			if (this.starting && this.serverBuffer.match(this.serverSuccess)) {
+			if 
+			(
+				this.starting && 
+				(
+					this.serverBuffer.match(this.serverSuccess0) ||
+					this.serverBuffer.match(this.serverSuccess1) 
+				)
+			) {
 				// Display in vscode debug console
 				this.debugServer(this.serverBuffer + '\n');
 				this.serverBuffer = '';
@@ -1418,18 +1443,7 @@ export class GnuDebugSession extends DebugSession {
 		this.debugServer('customRequest\n');
 	}
 
-	private launchCommands(host: string, port: number, program: string) {
-		const commands = [
-			// `-gdb-version`,
-			`-gdb-set target-async on`,
-			`-enable-pretty-printing`,
-			`-target-select extended-remote ${host}:${port}`,
-			`-file-exec-and-symbols "${program}"`,
-			`-interpreter-exec console "monitor halt"`,
-			`-interpreter-exec console "monitor reset"`,
-			`-target-download`,
-		];
-
+	private launchCommands(commands: string[]) {
 		const promises = commands.map((c) => this.sendCommand(c));
 
 		Promise.all(promises).then(() => {

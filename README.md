@@ -152,6 +152,9 @@ from Version 0.0.5 you can use OpenOCD as GDB server.
 
 # Release Notes
 
+### Version 0.0.7
+Added gdbCommands to support PSoC 6. 
+
 ### Version 0.0.5
 OpenOCD support. 
 
