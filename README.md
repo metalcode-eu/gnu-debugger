@@ -152,7 +152,7 @@ from Version 0.0.5 you can use OpenOCD as GDB server.
 
 # Release Notes
 
-### Version 0.0.8
+### Version 1.0.0
 Updated several dependencies. 
 
 ### Version 0.0.7
