@@ -1,7 +1,7 @@
 # GNU source level debugger for Visual Studio Code
 
 This extension for Visual Studo Code enables debugging of bare metal C/C++ 
-programs for Arm Cortex processors. The extension implements the Visual Studio
+programs for microcontrollers. The extension implements the Visual Studio
 Code debug adaptor for Arm embedded processors. This extension is suited for
 macOS, Linux and Window. 
 
@@ -151,6 +151,12 @@ The Open On-Chip Debugger supports a large amount of debug probes. Starting
 from Version 0.0.5 you can use OpenOCD as GDB server. 
 
 # Release Notes
+
+### Version 1.0.2
+Updated several dependencies to the latest version. 
+
+### Version 1.0.1
+Removed depences on vscode and changed it to @types/vscode. 
 
 ### Version 1.0.0
 Updated several dependencies. 
