@@ -3,11 +3,11 @@
 	"displayName": "gnu-debugger",
 	"description": "JLink GNU debugger for Visual Studio Code.",
 	"icon": "images/GNU-debugger-128x128.png",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"preview": false,
 	"publisher": "metalcode-eu",
 	"engines": {
-		"vscode": "^1.40.0",
+		"vscode": "^1.47.2",
 		"node": "^8.11.2"
 	},
 	"categories": [
@@ -133,8 +133,8 @@
 		"postinstall": ""
 	},
 	"dependencies": {
-		"vscode-debugadapter": "1.41.1",
-		"vscode-debugprotocol": "1.41.0"
+		"vscode-debugadapter": "1.37.1",
+		"vscode-debugprotocol": "1.37.0"
 	},
 	"devDependencies": {
 		"@types/node": "12.12.2",

@@ -1139,6 +1139,7 @@ export class GnuDebugSession extends DebugSession {
 								if (child.type && child.type[0] != '_') {
 									let value = child.value;
 									if (!value) {
+										value = '{...}'; 
 										if (child.type) {
 											const i = child.type.indexOf('[');
 											if (i > 0) {
