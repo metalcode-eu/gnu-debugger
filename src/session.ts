@@ -99,6 +99,14 @@ export class Variable implements DebugProtocol.Variable {
 		(varName: string, name: string, value: string, type: string) {
 		this.varName = varName;
 		this.name = name;
+
+		const E_STRING = /::([A-Za-z_][A-Za-z_0-9]*)$/;
+		var match = E_STRING.exec(value);
+    if (match)
+    {
+			value = match[1];
+		}
+		
 		this.putValue(value);
 		this.type = type;
 		this.variablesReference = 0;
